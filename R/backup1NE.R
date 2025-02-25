@@ -14,15 +14,12 @@ ETBD_migrateSYM.NE = function(initialtree,
                            siteN = 2,
                            DIST = "SRS",
                            psymp = c(0.1,0.1),
-                           watchgrow = F,
                            SADmarg = .1,
                            exparm = c(-0.7,-0.7),
                            NegExpEx = T,
-                           isGrid = F,
                            ExpSpParm = .7,
                            ExpSpParm2 = -.1,
                            ExpSp = T,
-                           SPgrow = .25,
                            splitparm = .5,
                            constantEX = .1,
                            migprob1 = 0,
@@ -31,13 +28,9 @@ ETBD_migrateSYM.NE = function(initialtree,
                            Asteroid = 40,
                            Asteroidimpact = c(-.2, -.2),
                            GROW = F,
-                           Speed = c(1,1),
-                           timedelay = 0,
-                           delay = c(1,1),
                            initialsize = 100,
-                           aslength = 10,
                            threshold = .1,
-                           reggie = ExpSpParm2
+                           reggie = JmaxV
 )
 
 
@@ -55,6 +48,8 @@ ETBD_migrateSYM.NE = function(initialtree,
   exty = list()
   richy <- c()
   con = c()
+  yuppy = 1
+  deadpool = JmaxV
 
   ##run these to run a time step individually for sim testing
   # ipa = 1
@@ -67,7 +62,6 @@ ETBD_migrateSYM.NE = function(initialtree,
   # probleave = .0
   # DIST = "SRS"
   # watchgrow = T
-  # isGrid = F
   # mig_percent = .3
   # SADmarg = .1
   # JmaxV = c(1000, 1000)
@@ -75,7 +69,6 @@ ETBD_migrateSYM.NE = function(initialtree,
   # exparm = -0.7
   # ExpSpParm = 2
   # ExpSp = F
-  # SPgrow = 0
   # splitparm  = .3
   # migprob = .4
   # constantEX = 0
@@ -302,17 +295,6 @@ ETBD_migrateSYM.NE = function(initialtree,
     ##
 
 
-    #### growing species by SPgrow ####
-
-    if (GROW){
-      mat <- list()
-      for ( o in 1:length(matrix_list1)){
-        mat[[o]] <- matrix_list1[[o]] + (matrix_list1[[o]]*SPgrow)
-      }
-      matrix_list1 <-  mat
-      "growing"
-    }
-
 
     # Sympatric Speciation
 
@@ -324,8 +306,6 @@ ETBD_migrateSYM.NE = function(initialtree,
           # speciationp = ((matrix_list1[[o]][, 1])/JmaxV[o])^ExpSpParm
         #  speciationp = ((matrix_list1[[o]][, 1])/sum(unlist(matrix_list1[[o]])))^ExpSpParm
           speciationp = 1- exp(ExpSpParm2[o]*matrix_list1[[o]][, 1]^ExpSpParm[o])
-
-          speciationp = speciationp*Speed[o]
           stip[[o]] <- speciationp
         }
       }
@@ -472,6 +452,50 @@ ETBD_migrateSYM.NE = function(initialtree,
       #10% of parent population abundance
       flop <- as.matrix(as.numeric(fax) * splitparm)
 
+
+      SV <- c()
+      for (i in 1:length(matrix_list4)) {
+        SV <- append(SV, length(matrix_list4[[i]]))
+      }
+
+      S <- SV
+
+      J <- c()
+      for ( i in 1:length(JmaxV)){
+        J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
+      }
+
+
+      oldJ <- c()
+      for ( i in 1:length(matrix_list4)){
+        old <- sum(matrix_list4[[i]])
+        oldJ <- append(oldJ, old)
+        deadpool <- J[[i]]-oldJ[[i]]
+      }
+
+
+      if (deadpool < 0){
+        print("above")
+          deadpool <- 30
+      } else {
+        print("below")
+        deadpool <- deadpool}
+
+
+
+      random_percents <- runif(length(flop), min = 0, max = 1)  # Generates 10 random percentages
+
+      farm <- c()
+      for ( i in 1:length(flop)){
+        clown <-  random_percents[i]*deadpool
+        farm <- append(farm,clown)
+        deadpool = deadpool - clown
+      }
+
+      flop <- as.matrix(as.numeric(farm))
+
+
+
       ### pop is new species sizes and the new names
       pop <- symp_sp
 
@@ -560,12 +584,6 @@ ETBD_migrateSYM.NE = function(initialtree,
       }
     }
 
-
-
-    if (watchgrow) {
-      tree <- ape::read.tree(text = Ntree)
-      plot(tree, show.tip.label = F)
-    }
 
 
 preSAD <- matrix_list5
@@ -706,19 +724,17 @@ for(o in 1:length(matrix_list5)) {
 }
 
 
+
 if (ipa %in%  Asteroid) {
-  ExpSpParm2 <- Asteroidimpact
+  JmaxV <- Asteroidimpact[yuppy]
+  yuppy <- yuppy + 1
+
   print("asteroid hits")
 } else {
-  ExpSpParm2 <- reggie
+  JmaxV <- reggie
 }
 
-if (ipa %in%  1:(1+timedelay)) {
-  Speed <- delay
-  #print("site waiting")
-} else {
-  Speed <- c(1,1)
-}
+
 
 
     ####### extinction #########
@@ -810,27 +826,28 @@ if (ipa %in%  1:(1+timedelay)) {
       matrix_list6 <- matrix_list5
 
 
-
+      extincttotal <- c()
 
       for (o in 1:length(extinctx)) {
         if (length(extinctx) > 0) {
           if (length(extinctx[[o]]) > 0) {
             #prune the extinct from table
             m = match(extinctx[[o]], row.names(matrix_list5[[o]]))
+            extincttotal = c(extincttotal,  matrix_list6[[o]][m, 1])
             matrix_list6[[o]][m, 1] = 0
+
           }
         }
       }
 
-      extincttotal = c(extincttotal, ext)
 
+      deadpool = deadpool + sum(as.numeric(unlist(extincttotal)))
 
       # for (o in 1:length(matrix_list6)){
       #   if (NA %in% matrix_list6[[o]] ){
       #     matrix_list6[[o]] = c()
       #   }
       # }
-
 
 
       pine <- Ntree
@@ -855,7 +872,7 @@ if (ipa %in%  1:(1+timedelay)) {
 
 
     #monitors of sizes and trees
-    extinctsp[[ipa]] = ext
+    extinctsp[[ipa]] = extincttotal
     mig[[ipa]] = matrix_list6
     migrates[[ipa]] = migratedata$allo
      trees[[ipa]] = Ntree
