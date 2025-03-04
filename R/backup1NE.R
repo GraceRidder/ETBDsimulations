@@ -393,7 +393,6 @@ ETBD_migrateSYM.NE = function(initialtree,
     abcd <- Ne$abcd
 
 
-
     #temp hold all unique species
     temp <- unique(unlist(symp_sp))
     symptrip <- trip2
@@ -411,6 +410,21 @@ ETBD_migrateSYM.NE = function(initialtree,
         g <- g + 1
       }
 
+
+      splitparm <- runif(1, min = 0.1, max = 0.3)
+
+
+      shell <- runif(1, min = 1, max = 100)
+
+      if (shell >= 50) {
+        bud = T
+        split = F
+      } else {
+        bud = F
+        split = T
+      }
+
+
       ##for budding speciation one branch has same abundance and new branch has 10% of original
       if (bud) {
         i  <- 1
@@ -426,6 +440,45 @@ ETBD_migrateSYM.NE = function(initialtree,
             }
           }
         }
+
+        SV <- c()
+        for (i in 1:length(matrix_list4)) {
+          SV <- append(SV, length(matrix_list4[[i]]))
+        }
+
+        S <- SV
+
+        J <- c()
+        for ( i in 1:length(JmaxV)){
+          J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
+        }
+
+        oldJ <- c()
+        for ( i in 1:length(matrix_list4)){
+          old <- sum(matrix_list4[[i]])
+          oldJ <- append(oldJ, old)
+          deadpool <- J[[i]]-oldJ[[i]]
+        }
+
+
+        if (deadpool < 0){
+          print("above")
+          deadpool <- 30
+        } else {
+          print("below")
+          deadpool <- deadpool}
+
+        flop <- as.matrix(as.numeric(fax))
+        random_percents <- runif(length(flop), min = 0, max = 1)  # Generates 10 random percentages
+
+        farm <- c()
+        for ( i in 1:length(flop)){
+          clown <-  random_percents[i]*deadpool
+          farm <- append(farm,clown)
+          deadpool = deadpool - clown
+        }
+
+        flop <- as.matrix(as.numeric(farm))
       }
 
       ##for splitting speciation 10% is subtracted from original and new branch is 10% of original
@@ -447,52 +500,13 @@ ETBD_migrateSYM.NE = function(initialtree,
             }
           }
         }
-      }
+
 
       #10% of parent population abundance
       flop <- as.matrix(as.numeric(fax) * splitparm)
+}
+#
 
-
-      SV <- c()
-      for (i in 1:length(matrix_list4)) {
-        SV <- append(SV, length(matrix_list4[[i]]))
-      }
-
-      S <- SV
-
-      J <- c()
-      for ( i in 1:length(JmaxV)){
-        J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
-      }
-
-
-      oldJ <- c()
-      for ( i in 1:length(matrix_list4)){
-        old <- sum(matrix_list4[[i]])
-        oldJ <- append(oldJ, old)
-        deadpool <- J[[i]]-oldJ[[i]]
-      }
-
-
-      if (deadpool < 0){
-        print("above")
-          deadpool <- 30
-      } else {
-        print("below")
-        deadpool <- deadpool}
-
-
-
-      random_percents <- runif(length(flop), min = 0, max = 1)  # Generates 10 random percentages
-
-      farm <- c()
-      for ( i in 1:length(flop)){
-        clown <-  random_percents[i]*deadpool
-        farm <- append(farm,clown)
-        deadpool = deadpool - clown
-      }
-
-      flop <- as.matrix(as.numeric(farm))
 
 
 
@@ -886,7 +900,7 @@ if (ipa %in%  Asteroid) {
       trees = trees,
       #final tree
       #all trees by timeslice
-      matrix_list = matrix_list6,
+      matrix_list = matrix_list5,
       mig = mig,
       migrates = migrates,
       exty = extinctsp,
