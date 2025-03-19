@@ -30,7 +30,8 @@ ETBD_migrateSYM.NE = function(initialtree,
                            GROW = F,
                            initialsize = 100,
                            threshold = .1,
-                           reggie = JmaxV
+                           reggie = JmaxV,
+                           spud = 5
 )
 
 
@@ -393,6 +394,13 @@ ETBD_migrateSYM.NE = function(initialtree,
     abcd <- Ne$abcd
 
 
+
+
+
+    #### trip2 is the names of the new species????
+
+
+
     #temp hold all unique species
     temp <- unique(unlist(symp_sp))
     symptrip <- trip2
@@ -411,28 +419,51 @@ ETBD_migrateSYM.NE = function(initialtree,
       }
 
 
-      splitparm <- runif(1, min = 0.1, max = 0.3)
+     splitparm <- runif(1, min = 0.1, max = 0.3)
 
 
-      shell <- runif(1, min = 1, max = 100)
+     floplog = list()
+     for (o in 1:length(symp_sp)) {
+       logger = as.logical(rbinom(length(symp_sp), 1, spud))   ##probability of budding or splitting
+       floplog[[o]] = logger
+     }
 
-      if (shell >= 50) {
-        bud = T
-        split = F
-      } else {
-        bud = F
-        split = T
-      }
+     symp_spB <- symp_sp[logger]  ### budding species
+     symp_spS <- (symp_sp[!logger])  #### splitting species
+
+     tripB <- trip2[logger]
+     tripS <- trip2[!logger]
+
+     #temp hold all unique species
+     temp <- unique(unlist(symp_spB))
+     symptrip <- tripB
+
+     #update the speciating tips
+     trim <- tripB
+    } else {    matrix_list5.5 <- matrix_list5
+
+    }
+
+
+     if (length(temp) > 0) {
+       g <- 0
+       tri <- list()
+       triw <- list()
+       for (o in 1:length(trim)) {
+         tri[[g + 1]] <- trim[[o]][1]
+         triw[[g + 1]] <- trim[[o]][2]
+         g <- g + 1
+       }
 
 
       ##for budding speciation one branch has same abundance and new branch has 10% of original
-      if (bud) {
+        print("budding")
         i  <- 1
         fax <- list()
-        for (o in 1:length(symp_sp)) {
-          if (length(symp_sp[[o]]) != 0) {
+        for (o in 1:length(symp_spB)) {
+          if (length(symp_spB[[o]]) != 0) {
             #update species names in sizes table
-            m = match(symp_sp[[o]], row.names(matrix_list4[[o]]))
+            m = match(symp_spB[[o]], row.names(matrix_list4[[o]]))
             for (k in 1:length(m)) {
               row.names(matrix_list4[[o]])[m][k] = paste(tri[i], sep = "")
               fax[i] <- (matrix_list4[[o]])[m][k]
@@ -441,35 +472,41 @@ ETBD_migrateSYM.NE = function(initialtree,
           }
         }
 
-        SV <- c()
-        for (i in 1:length(matrix_list4)) {
-          SV <- append(SV, length(matrix_list4[[i]]))
-        }
+        # SV <- c()
+        # for (i in 1:length(matrix_list4)) {
+        #   SV <- append(SV, length(matrix_list4[[i]]))
+        # }
+        #
+        # S <- SV
+        #
+        # J <- c()
+        # for ( i in 1:length(JmaxV)){
+        #   J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
+        # }
 
-        S <- SV
 
-        J <- c()
-        for ( i in 1:length(JmaxV)){
-          J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
-        }
+        deadpool <- JmaxV
+
 
         oldJ <- c()
         for ( i in 1:length(matrix_list4)){
           old <- sum(matrix_list4[[i]])
           oldJ <- append(oldJ, old)
-          deadpool <- J[[i]]-oldJ[[i]]
+          deadpool <- deadpool-oldJ[[i]]
         }
 
 
         if (deadpool < 0){
-          print("above")
-          deadpool <- 30
+          print("deadpool is negative")
+          deadpool <- 300
         } else {
-          print("below")
+          print(deadpool)
           deadpool <- deadpool}
 
+
+
         flop <- as.matrix(as.numeric(fax))
-        random_percents <- runif(length(flop), min = 0, max = 1)  # Generates 10 random percentages
+        random_percents <- runif(length(flop), min = 0, max = 1)
 
         farm <- c()
         for ( i in 1:length(flop)){
@@ -479,23 +516,104 @@ ETBD_migrateSYM.NE = function(initialtree,
         }
 
         flop <- as.matrix(as.numeric(farm))
-      }
+
+
+
+     ### pop is new species sizes and the new names
+     pop <- symp_spB
+
+     i <- 1
+     for (o in 1:length(symp_spB)) {
+       if (length(symp_spB[[o]]) >= 1) {
+         for (k in 1:length(symp_spB[[o]])) {
+           pop[[o]][k] <- flop[[i]]
+           i <- i + 1
+         }
+       }
+       pop[[o]] <- matrix(as.numeric(pop[[o]]))
+     }
+
+     i <- 1
+     for (o in 1:length(symp_spB)) {
+       if (length(symp_spB[[o]]) >= 1) {
+         m = 1:length(symp_spB[[o]])
+         for (k in 1:length(m)) {
+           rownames(pop[[o]])[m][k] = paste(triw[i], sep = "")
+           i <- i + 1
+         }
+       }
+     }
+
+
+     morto <- list()
+     for (o in 1:length(siteN)) {
+       for (h in 1:length(pop[[o]])) {
+         mart <- rbind(matrix_list4[[o]], pop[[o]])
+         morto[[o]] <- mart
+       }
+     }
+
+
+     # Fix empty row names
+     for (o in 1:length(siteN)) {
+       for (k in length(morto[[o]]))
+         if (length(rownames(morto[[o]])) < 1) {
+           rownames(morto[[o]]) <- rownames(matrix_list4[[o]])
+         }
+     }
+     matrix_list5 <- morto
+    } else {
+      matrix_list5 <- matrix_list4
+    }
+
+
+    if (NA %in% unlist(matrix_list5)) {
+      message(
+        "NA in matrixlist5: problem with budding",
+        ipa
+      )
+    }
+
+
+
+
+
+
+     #temp hold all unique species
+     temp <- unique(unlist(symp_spS))
+     symptrip <- tripS
+
+     #update the speciating tips
+     trim <- tripS
+
+     if (length(temp) > 0) {
+       g <- 0
+       tri <- list()
+       triw <- list()
+       for (o in 1:length(trim)) {
+         tri[[g + 1]] <- trim[[o]][1]
+         triw[[g + 1]] <- trim[[o]][2]
+         g <- g + 1
+       }
+
+
 
       ##for splitting speciation 10% is subtracted from original and new branch is 10% of original
-      if (split) {
+
+        print("splitting")
         i  <- 1
         fax <- list()
-        for (o in 1:length(symp_sp)) {
-          if (length(symp_sp[[o]]) != 0) {
+        for (o in 1:length(symp_spS)) {
+          if (length(symp_spS[[o]]) != 0) {
             #update species names in sizes table
-            m = match(symp_sp[[o]], row.names(matrix_list4[[o]]))
+            m = match(symp_spS[[o]], row.names(matrix_list5[[o]]))
             for (k in 1:length(m)) {
-              row.names(matrix_list4[[o]])[m][k] = paste(tri[i], sep = "")
-              fax[i] <- (matrix_list4[[o]])[m][k]
-              faax <- (matrix_list4[[o]])[m][k]
+              row.names(matrix_list5[[o]])[m][k] = paste(tri[i], sep = "")
+              fax[i] <- (matrix_list5[[o]])[m][k]
+              faax <- (matrix_list5[[o]])[m][k]
               faxtax <- as.numeric(faax) * splitparm
-              matrix_list4[[o]][m][k] <-
-                matrix_list4[[o]][m][k] - faxtax
+              matrix_list5[[o]][m][k] <-
+                matrix_list5[[o]][m][k] - faxtax
               i <- i + 1
             }
           }
@@ -504,19 +622,20 @@ ETBD_migrateSYM.NE = function(initialtree,
 
       #10% of parent population abundance
       flop <- as.matrix(as.numeric(fax) * splitparm)
-}
+
 #
 
 
 
 
+
       ### pop is new species sizes and the new names
-      pop <- symp_sp
+      pop <- symp_spS
 
       i <- 1
-      for (o in 1:length(symp_sp)) {
-        if (length(symp_sp[[o]]) >= 1) {
-          for (k in 1:length(symp_sp[[o]])) {
+      for (o in 1:length(symp_spS)) {
+        if (length(symp_spS[[o]]) >= 1) {
+          for (k in 1:length(symp_spS[[o]])) {
             pop[[o]][k] <- flop[[i]]
             i <- i + 1
           }
@@ -525,9 +644,9 @@ ETBD_migrateSYM.NE = function(initialtree,
       }
 
       i <- 1
-      for (o in 1:length(symp_sp)) {
-        if (length(symp_sp[[o]]) >= 1) {
-          m = 1:length(symp_sp[[o]])
+      for (o in 1:length(symp_spS)) {
+        if (length(symp_spS[[o]]) >= 1) {
+          m = 1:length(symp_spS[[o]])
           for (k in 1:length(m)) {
             rownames(pop[[o]])[m][k] = paste(triw[i], sep = "")
             i <- i + 1
@@ -539,7 +658,7 @@ ETBD_migrateSYM.NE = function(initialtree,
       morto <- list()
       for (o in 1:length(siteN)) {
         for (h in 1:length(pop[[o]])) {
-          mart <- rbind(matrix_list4[[o]], pop[[o]])
+          mart <- rbind(matrix_list5[[o]], pop[[o]])
           morto[[o]] <- mart
         }
       }
@@ -549,21 +668,25 @@ ETBD_migrateSYM.NE = function(initialtree,
       for (o in 1:length(siteN)) {
         for (k in length(morto[[o]]))
           if (length(rownames(morto[[o]])) < 1) {
-            rownames(morto[[o]]) <- rownames(matrix_list4[[o]])
+            rownames(morto[[o]]) <- rownames(matrix_list5[[o]])
           }
       }
-      matrix_list5 <- morto
+      matrix_list5.5 <- morto
     } else {
-      matrix_list5 <- matrix_list4
+      matrix_list5.5 <- matrix_list5
     }
 
 
-    if (NA %in% unlist(matrix_list5)) {
+    if (NA %in% unlist(matrix_list5.5)) {
       message(
-        "NA in matrixlist5: problem with adding sympatric species to matrix list",
+        "NA in matrixlist5: problem with splitting",
         ipa
       )
     }
+
+
+     matrix_list5 <- matrix_list5.5
+
 
     ########updating survivors###########
 
@@ -855,7 +978,7 @@ if (ipa %in%  Asteroid) {
       }
 
 
-      deadpool = deadpool + sum(as.numeric(unlist(extincttotal)))
+     # deadpool = deadpool + sum(as.numeric(unlist(extincttotal)))
 
       # for (o in 1:length(matrix_list6)){
       #   if (NA %in% matrix_list6[[o]] ){
