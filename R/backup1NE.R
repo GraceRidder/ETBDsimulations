@@ -52,6 +52,7 @@ ETBD_migrateSYM.NE = function(initialtree,
   yuppy = 1
   deadpool = JmaxV
 
+
   ##run these to run a time step individually for sim testing
   # ipa = 1
   # psymp = .15
@@ -77,13 +78,14 @@ ETBD_migrateSYM.NE = function(initialtree,
   #### A few small function needed for the main function
   '%!in%' <- function(x,y)!('%in%'(x,y))
 
+  #### make a function to generate random and distinct names for the species
   myFun <- function(n = 5000000) {
     a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
     paste0(a, sprintf("%04d", sample(99999, n, TRUE)), sample(LETTERS, n, TRUE))
   }
 
-  #yes the simulation will crash if you genrate more that 3 million species ...
-  abcd <-myFun(50000)
+  #yes the simulation will crash if you genrate more that 100,000 species ...
+  abcd <-myFun(100000)
 
 
 
@@ -387,6 +389,9 @@ ETBD_migrateSYM.NE = function(initialtree,
     matrix_list4 <- matrix_list13
 
 
+
+
+
     ###add the symp species onto the allotree
     Ne <- grow.newick(symp_sp, Nallo.tree, abcd)
     Nfull.tree <- Ne$tree
@@ -394,10 +399,6 @@ ETBD_migrateSYM.NE = function(initialtree,
     abcd <- Ne$abcd
 
 
-
-
-
-    #### trip2 is the names of the new species????
 
 
 
@@ -419,7 +420,7 @@ ETBD_migrateSYM.NE = function(initialtree,
       }
 
 
-     splitparm <- runif(1, min = 0.1, max = 0.3)
+     #splitparm <- runif(1, min = 0.1, max = 1)
 
 
      floplog = list()
@@ -436,16 +437,12 @@ ETBD_migrateSYM.NE = function(initialtree,
 
      #temp hold all unique species
      temp <- unique(unlist(symp_spB))
-     symptrip <- tripB
+
 
      #update the speciating tips
      trim <- tripB
-    } else {    matrix_list5.5 <- matrix_list5
-
-    }
 
 
-     if (length(temp) > 0) {
        g <- 0
        tri <- list()
        triw <- list()
@@ -515,8 +512,9 @@ ETBD_migrateSYM.NE = function(initialtree,
           deadpool = deadpool - clown
         }
 
-        flop <- as.matrix(as.numeric(farm))
+       # flop <- as.matrix(as.numeric(farm))
 
+        flop <- as.matrix(flop*splitparm)
 
 
      ### pop is new species sizes and the new names
@@ -564,6 +562,8 @@ ETBD_migrateSYM.NE = function(initialtree,
      matrix_list5 <- morto
     } else {
       matrix_list5 <- matrix_list4
+      symp_spS <- c()
+      tripS <- c()
     }
 
 
@@ -576,12 +576,9 @@ ETBD_migrateSYM.NE = function(initialtree,
 
 
 
-
-
-
      #temp hold all unique species
      temp <- unique(unlist(symp_spS))
-     symptrip <- tripS
+
 
      #update the speciating tips
      trim <- tripS
@@ -623,7 +620,6 @@ ETBD_migrateSYM.NE = function(initialtree,
       #10% of parent population abundance
       flop <- as.matrix(as.numeric(fax) * splitparm)
 
-#
 
 
 
@@ -742,7 +738,7 @@ for( o in 1:length(matrix_list05)){
 
 if (!GROW){
 
-#print('still sad')
+print('nuding sad')
 
     ### RANKS ABUNDANCES AND DRAWS FROM SAD Fishers log series distribution
     if (DIST == "SRS") {
@@ -803,13 +799,13 @@ library(TTR)
 richy <- append(richy, length(unmatrixlist(matrix_list5)))
 
 if (length(richy) > 50) {  # Ensure enough data points
-  ema_values <- EMA(richy, n = 10)  # Smooth population data
+  ema_values <- EMA(richy, n = 20)  # Smooth population data
 
   stable_count <- 0  # Track consecutive stable steps
-  required_stable_steps <- 10  # How many steps need to be stable before stopping
+  required_stable_steps <- 20  # How many steps need to be stable before stopping
   alpha <- threshold  # Set threshold as 1% of EMA
 
-  for (t in (11:length(ema_values))) {  # Start from where EMA is valid
+  for (t in (21:length(ema_values))) {  # Start from where EMA is valid
     if (!is.na(ema_values[t]) && !is.na(ema_values[t - 1])) {
       relative_change <- abs(ema_values[t] - ema_values[t - 1]) / ema_values[t]  # % change
 
@@ -819,25 +815,26 @@ if (length(richy) > 50) {  # Ensure enough data points
         stable_count <- 0  # Reset if change is significant
       }
 
-      if (stable_count >= required_stable_steps) {  # Ensure stability over time
-        print(paste("Stopping at time step:", t))
-        return(
-          list(
-            tree = Ntree,
-            trees = trees,
-            matrix_list = matrix_list6,
-            mig = mig,
-            migrates = migrates,
-            exty = extinctsp,
-            symp = symp,
-            con = paste0("converged at ", ipa)
-          )
+if (stable_count >= required_stable_steps) {
+
+   # Ensure stability over time
+      print(paste("Stopping at time step:", t))
+      return(
+        list(
+          tree = Ntree,
+          trees = trees,
+          matrix_list = matrix_list6,
+          mig = mig,
+          migrates = migrates,
+          exty = extinctsp,
+          symp = symp,
+          con = paste0("converged at ", ipa)
         )
+      )
       }
     }
   }
 }
-
 
 
 
@@ -1004,7 +1001,6 @@ if (ipa %in%  Asteroid) {
       if (is.wholenumber(B)){
         print(paste('relax everything is okay ...', ipa))
       }
-
     }
 
 
@@ -1028,7 +1024,7 @@ if (ipa %in%  Asteroid) {
       migrates = migrates,
       exty = extinctsp,
       symp = symp,
-      con = c("not converged")
+      con = con
     )
   )
 

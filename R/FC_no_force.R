@@ -26,12 +26,14 @@ newamt <- matlist
 
 for (i in 1:length(matlist)) {
   if (oldJ[[i]]  > J[[i]]) {
-    print("above J nulcline")
-    #newamt[[i]] <- newamt[[i]]
-    newamt[[i]] <-newamt[[i]] - newamt[[i]]*.2
+   # print("above J nulcline")
+   # newamt[[i]] <- newamt[[i]] + ((1-(oldJ[[i]]/J[[i]]))*oldJ[[i]])*pers
+   # newamt[[i]] <-newamt[[i]]* 1 - (J[[i]]-oldJ[[i]])/sum(unlist(matlist))
   } else {
-    print("BELOW J nulcline")
-    newamt[[i]] <-newamt[[i]] + (J[[i]]-oldJ[[i]])/S[[i]]
+   # print("BELOW J nulcline")
+   # newamt[[i]] <-newamt[[i]] * (J[[i]]-oldJ[[i]])/sum(unlist(matlist))
+   # newamt[[i]] <-newamt[[i]] + newamt[[i]]*.05
+
   }
 
 }
@@ -40,5 +42,8 @@ for (i in 1:length(matlist)) {
 return(newamt)
 
 }
+
+
+
 
 
