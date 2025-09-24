@@ -206,7 +206,7 @@ ETBD_migrateSYM.NE = function(initialtree,
 
 
 
-  print("version waterbuffalo")
+  print("version Systematic Biology")
 
   for (ipa in 1:t)
 
@@ -420,7 +420,7 @@ ETBD_migrateSYM.NE = function(initialtree,
       }
 
 
-     #splitparm <- runif(1, min = 0.1, max = 1)
+     #splitparm <- runif(1, min = 0.1, max = .5)
 
 
      floplog = list()
@@ -791,9 +791,6 @@ print('nuding sad')
   matrix_list5 <- xx
 }
 
-
-
-library(TTR)
 
 
 richy <- append(richy, length(unmatrixlist(matrix_list5)))
