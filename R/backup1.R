@@ -17,7 +17,7 @@
 
 
 
-ETBD_migrateSYM = function(initialtree,
+ETBD_migrateSYMR = function(initialtree,
                            t = 10,
                            Jmax = 1000,
                            JmaxV = c(1000, 1000),
