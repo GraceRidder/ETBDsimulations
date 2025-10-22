@@ -8,15 +8,15 @@
 
 
 ETBD_migrateSYM.NE = function(initialtree,
-                           t = 100,
-                           JmaxV = c(1000, 1000),
+                           t = 10,
+                           JmaxV = 1000,
                            split = F,
                            bud = T,
-                           siteN = 2,
+                           siteN = 1,
                            DIST = "SRS",
-                           psymp = c(0.1,0.1),
+                           psymp = 0.1,
                            SADmarg = .1,
-                           exparm = c(-0.7,-0.7),
+                           exparm = -0.7,
                            NegExpEx = T,
                            ExpSpParm = .7,
                            ExpSpParm2 = -.1,
@@ -25,14 +25,14 @@ ETBD_migrateSYM.NE = function(initialtree,
                            constantEX = .1,
                            migprob1 = 0,
                            migprob2 = 0,
-                           exparm2 = c(.5,.5),
-                           Asteroid = 40,
-                           Asteroidimpact = c(-.2, -.2),
+                           exparm2 = .5,
+                           Asteroid = c(1000,1800),
+                           Asteroidimpact = 0,
                            GROW = F,
                            initialsize = 100,
-                           threshold = .1,
+                           threshold = .01,
                            reggie = JmaxV,
-                           spud = 5
+                           spud = 1
 )
 
 
@@ -207,7 +207,7 @@ ETBD_migrateSYM.NE = function(initialtree,
 
 
 
-  print("version Systematic Biology")
+  print("version Ecology Letters")
 
   for (ipa in 1:t)
 
@@ -738,8 +738,6 @@ for( o in 1:length(matrix_list05)){
 
 
 if (!GROW){
-
-print('nuding sad')
 
     ### RANKS ABUNDANCES AND DRAWS FROM SAD Fishers log series distribution
     if (DIST == "SRS") {
