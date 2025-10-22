@@ -7,13 +7,14 @@
 #' @param JmaxV Resource levels (Jmax)
 #' @param DIST Type of species abundance distribution: either log-normal: "NORM", Fisher's log-series: "SRS", or uniform:"NO" (SAD)
 #' @param NegExpEx If true indicates extinction is population size dependent and will utilize exparm paramaters.
-#' @param exparm Extinction parameter (x0)
-#' @param exparm2 Extinction parameter (x1)
-#' @param ExpSp If true indicates speciation is population size dependent and will utilize ExpSpParm paramaters.
-#' @param ExpSpParm Speciation parameter (v0)
-#' @param ExpSpParm2 Speciation parameter (v1)
+#' @param exparm0 Extinction parameter (x0)
+#' @param exparm1 Extinction parameter (x1)
+#' @param ExpSp If true indicates speciation is population size dependent and will utilize spparm paramaters.
+#' @param spparm0 Speciation parameter (v0)
+#' @param spparm1 Speciation parameter (v1)
 #' @param splitparm Heritability of population size (h)
-#' @param constantEX Constant probability of either speciation or extinction given one of the dependencies is false (con)
+#' @param conex Constant probability of extinction given population size dependent extinction is false (con)
+#' @param consp Constant probability of speciation given population size dependent speciation is false (con)
 #' @param initialsize Initial population size of starting species
 
 #' @return A list containing:
@@ -21,10 +22,10 @@
 #'   \item \code{tree} – The final newick tree  after simulation.
 #'   \item \code{trees} – All trees at each time step
 #'   \item \code{matrix_list} – A list of all species identities and population sizes for final tree
-#'   \item \code{mig} – A list of all species identities and population sizes for every tree at each time step
+#'   \item \code{matrix_lists} – A list of all species identities and population sizes for every tree at each time step
 #' }
 #' @examples
-#' ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm2 = -0.70,psymp = 0.36, ExpSp = T,    ExpSpParm2 = -0.08,ExpSpParm = 0.94,constantEX =  0.36,splitparm = .5, )
+#' ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm1 = -0.70,consp = 0.36, ExpSp = T,    spparm1 = -0.08,ExpSpParm = 0.94,conex =  0.36,splitparm = .5, )
 #' @export
 ETBD_migrateSYM.NE <- function(initialtree,
                            t = 10,
@@ -33,24 +34,23 @@ ETBD_migrateSYM.NE <- function(initialtree,
                            bud = T,
                            siteN = 1,
                            DIST = "SRS",
-                           psymp = 0.1,
+                           consp = 0.1,
                            SADmarg = .1,
-                           exparm = -0.7,
+                           exparm0 = -0.7,
                            NegExpEx = T,
-                           ExpSpParm = .7,
-                           ExpSpParm2 = -.1,
+                           spparm0 = .7,
+                           spparm1 = -.1,
                            ExpSp = T,
                            splitparm = .5,
-                           constantEX = .1,
+                           conex = .1,
                            migprob1 = 0,
                            migprob2 = 0,
-                           exparm2 = .5,
+                           exparm1 = .5,
                            Asteroid = c(1000,1800),
                            Asteroidimpact = 0,
                            GROW = F,
                            initialsize = 100,
                            threshold = .01,
-                           reggie = JmaxV,
                            spud = 1
 )
 
@@ -59,7 +59,7 @@ ETBD_migrateSYM.NE <- function(initialtree,
   #monitor objects
   extincttotal = NULL
   trip2 <- NULL
-  mig = list()
+  matrixlists = list()
   extinctsp = list()
   symp = list()
   symptrip = list()
@@ -71,11 +71,12 @@ ETBD_migrateSYM.NE <- function(initialtree,
   con = c()
   yuppy = 1
   deadpool = JmaxV
+  reggie = JmaxV
 
 
   ##run these to run a time step individually for sim testing
   # ipa = 1
-  # psymp = .15
+  # consp = .15
   # pallo = .0
   # split = F
   # bud = T
@@ -88,26 +89,24 @@ ETBD_migrateSYM.NE <- function(initialtree,
   # SADmarg = .1
   # JmaxV = c(1000, 1000)
   # NegExpEx = T
-  # exparm = -0.7
-  # ExpSpParm = 2
+  # exparm0 = -0.7
+  # spparm0 = 2
   # ExpSp = F
   # splitparm  = .3
   # migprob = .4
-  # constantEX = 0
+  # conex = 0
 
   #### A few small function needed for the main function
   '%!in%' <- function(x,y)!('%in%'(x,y))
 
   #### make a function to generate random and distinct names for the species
-  myFun <- function(n = 5000000) {
+  makeID <- function(n = 5000000) {
     a <- do.call(paste0, replicate(5, sample(LETTERS, n, TRUE), FALSE))
     paste0(a, sprintf("%04d", sample(99999, n, TRUE)), sample(LETTERS, n, TRUE))
   }
 
   #yes the simulation will crash if you genrate more that 100,000 species ...
-  abcd <-myFun(100000)
-
-
+  abcd <-makeID(100000)
 
   {
 
@@ -147,8 +146,6 @@ ETBD_migrateSYM.NE <- function(initialtree,
         )
         test1[[s]] = q
       }
-
-
       matrix_list0 <- matrix_list
 
       ###adding the sizes to the matrix
@@ -166,9 +163,6 @@ ETBD_migrateSYM.NE <- function(initialtree,
       }
     }
   }
-
-
-
 
   ########### initialization for ONE site ##########
   if (length(siteN) == 1){
@@ -221,17 +215,12 @@ ETBD_migrateSYM.NE <- function(initialtree,
   }
 
 
-
   pine <- "(t001:1,t002:1);"
-
-
-
   print("version Ecology Letters")
 
   for (ipa in 1:t)
 
   {
-
 
     #start
     matrix_list0 <- matrix_list6
@@ -255,19 +244,13 @@ ETBD_migrateSYM.NE <- function(initialtree,
       }
     }
 
-
-
-
-
     ##### selecting species to migrate ######
 
     if (length(siteN) > 1) {
       dist <- makeLineDomain(length(siteN), migprob1)
       dist2 <- makeLineDomain(length(siteN), migprob2)
       dist[2,] <- dist2[2,]
-
       migratedata <- Migrate(matrix_list05, dist, 1, siteN)
-
       matrix_list1 <- migratedata$matrixlist
 
     } else {
@@ -275,8 +258,6 @@ ETBD_migrateSYM.NE <- function(initialtree,
       migratedata <- c()
 
     }
-
-
 
     matrix_list05 <- DeleteExtinct(matrix_list1)
 
@@ -326,9 +307,9 @@ ETBD_migrateSYM.NE <- function(initialtree,
       stip = list()
       for (o in 1:length(matrix_list1)) {
         if (NA %!in% matrix_list1[[o]]) {
-          # speciationp = ((matrix_list1[[o]][, 1])/JmaxV[o])^ExpSpParm
-        #  speciationp = ((matrix_list1[[o]][, 1])/sum(unlist(matrix_list1[[o]])))^ExpSpParm
-          speciationp = 1- exp(ExpSpParm2[o]*matrix_list1[[o]][, 1]^ExpSpParm[o])
+          # speciationp = ((matrix_list1[[o]][, 1])/JmaxV[o])^spparm0
+        #  speciationp = ((matrix_list1[[o]][, 1])/sum(unlist(matrix_list1[[o]])))^spparm0
+          speciationp = 1- exp(spparm1[o]*matrix_list1[[o]][, 1]^spparm0[o])
           stip[[o]] <- speciationp
         }
       }
@@ -351,8 +332,8 @@ ETBD_migrateSYM.NE <- function(initialtree,
 
       speciatinglog = list()
       for (o in 1:length(matrix_list1)) {
-        spec = as.logical(rbinom(length(matrix_list1[[o]][,1]), 1, psymp[o]))   ##probability of sympatric speciation psymp
-        ##probability of sympatric speciation psymp
+        spec = as.logical(rbinom(length(matrix_list1[[o]][,1]), 1, consp[o]))   ##probability of sympatric speciation consp
+        ##probability of sympatric speciation consp
         speciatinglog[[o]] = spec
 
       }
@@ -839,7 +820,7 @@ if (stable_count >= required_stable_steps) {
           tree = Ntree,
           trees = trees,
           matrix_list = matrix_list6,
-          mig = mig,
+          matrixlists = matrixlists,
           migrates = migrates,
           exty = extinctsp,
           symp = symp,
@@ -877,7 +858,6 @@ for(o in 1:length(matrix_list5)) {
 if (ipa %in%  Asteroid) {
   JmaxV <- Asteroidimpact[yuppy]
   yuppy <- yuppy + 1
-
   print("asteroid hits")
 } else {
   JmaxV <- reggie
@@ -906,12 +886,12 @@ if (ipa %in%  Asteroid) {
         if (NA %!in% matrix_list5[[o]]) {
           # extinctionp = 1 / (0.37 ^ 1.1) * exp(-1.1 * matrix_list5[[o]][, 1])
           if (NegExpEx) {
-            #extinctionp = exp(exparm * matrix_list5[[o]][, 1])
-            #extinctionp = exparm2*matrix_list5[[o]][, 1]^exparm
-            extinctionp = 1- exp(exparm2[o]*matrix_list5[[o]][, 1]^exparm[o])
+            #extinctionp = exp(exparm0 * matrix_list5[[o]][, 1])
+            #extinctionp = exparm1*matrix_list5[[o]][, 1]^exparm0
+            extinctionp = 1- exp(exparm1[o]*matrix_list5[[o]][, 1]^exparm0[o])
             etip[[o]] <- extinctionp
           } else {
-            extinctionp = constantEX
+            extinctionp = conex
             etip[[o]] <- extinctionp
           }
         }
@@ -1021,13 +1001,13 @@ if (ipa %in%  Asteroid) {
 
     #monitors of sizes and trees
     extinctsp[[ipa]] = extincttotal
-    mig[[ipa]] = matrix_list6
+    matrixlists[[ipa]] = matrix_list6
     migrates[[ipa]] = migratedata$allo
      trees[[ipa]] = Ntree
      symp[[ipa]] = symp_sp
 
   }
-  print(JmaxV)
+  print(paste('equilibrium met: stopping at', ipa))
   return(
     list(
       tree = Ntree,
@@ -1035,19 +1015,17 @@ if (ipa %in%  Asteroid) {
       #final tree
       #all trees by timeslice
       matrix_list = matrix_list5,
-      mig = mig,
-      migrates = migrates,
-      exty = extinctsp,
-      symp = symp,
-      con = con
+      matrixlists = matrixlists
+     # migrates = migrates,
+     # exty = extinctsp,
+     # symp = symp,
+     # con = con
     )
   )
 
 }
 }
 
-
-####### Extra testing #######
 
 
 

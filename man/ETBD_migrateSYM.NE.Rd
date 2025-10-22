@@ -12,24 +12,23 @@ ETBD_migrateSYM.NE(
   bud = T,
   siteN = 1,
   DIST = "SRS",
-  psymp = 0.1,
+  consp = 0.1,
   SADmarg = 0.1,
-  exparm = -0.7,
+  exparm0 = -0.7,
   NegExpEx = T,
-  ExpSpParm = 0.7,
-  ExpSpParm2 = -0.1,
+  spparm0 = 0.7,
+  spparm1 = -0.1,
   ExpSp = T,
   splitparm = 0.5,
-  constantEX = 0.1,
+  conex = 0.1,
   migprob1 = 0,
   migprob2 = 0,
-  exparm2 = 0.5,
+  exparm1 = 0.5,
   Asteroid = c(1000, 1800),
   Asteroidimpact = 0,
   GROW = F,
   initialsize = 100,
   threshold = 0.01,
-  reggie = JmaxV,
   spud = 1
 )
 }
@@ -40,21 +39,23 @@ ETBD_migrateSYM.NE(
 
 \item{DIST}{Type of species abundance distribution: either log-normal: "NORM", Fisher's log-series: "SRS", or uniform:"NO" (SAD)}
 
-\item{exparm}{Extinction parameter (x0)}
+\item{consp}{Constant probability of speciation given population size dependent speciation is false (con)}
+
+\item{exparm0}{Extinction parameter (x0)}
 
 \item{NegExpEx}{If true indicates extinction is population size dependent and will utilize exparm paramaters.}
 
-\item{ExpSpParm}{Speciation parameter (v0)}
+\item{spparm0}{Speciation parameter (v0)}
 
-\item{ExpSpParm2}{Speciation parameter (v1)}
+\item{spparm1}{Speciation parameter (v1)}
 
-\item{ExpSp}{If true indicates speciation is population size dependent and will utilize ExpSpParm paramaters.}
+\item{ExpSp}{If true indicates speciation is population size dependent and will utilize spparm0 paramaters.}
 
 \item{splitparm}{Heritability of population size (h)}
 
-\item{constantEX}{Constant probability of either speciation or extinction given one of the dependencies is false (con)}
+\item{conex}{Constant probability of extinction given population size dependent extinction is false (con)}
 
-\item{exparm2}{Extinction parameter (x1)}
+\item{exparm1}{Extinction parameter (x1)}
 
 \item{initialsize}{Initial population size of starting species}
 }
@@ -64,12 +65,12 @@ A list containing:
   \item \code{tree} – The final newick tree  after simulation.
   \item \code{trees} – All trees at each time step
   \item \code{matrix_list} – A list of all species identities and population sizes for final tree
-  \item \code{mig} – A list of all species identities and population sizes for every tree at each time step
+  \item \code{matrix_lists} – A list of all species identities and population sizes for every tree at each time step
 }
 }
 \description{
 Simulates phylogenetic trees under the assumptions of the Equilibrium Theory of Biodiversity Dynamics.
 }
 \examples{
-ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm2 = -0.70,psymp = 0.36, ExpSp = T,    ExpSpParm2 = -0.08,ExpSpParm = 0.94,constantEX =  0.36,splitparm = .5, )
+ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm1 = -0.70,consp = 0.36, ExpSp = T,    spparm1 = -0.08,ExpSpParm = 0.94,conex =  0.36,splitparm = .5, )
 }
