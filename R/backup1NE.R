@@ -1,13 +1,32 @@
-# Setting up workspace ----
-# If you are using Base R, this sets the file path to wherever this script is:
-#setwd(getSrcDirectory()[1])
-# On R-Studio, use:
-#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+#' ETBD_migrateSYM.NE.
+#'
+#' Simulates phylogenetic trees under the assumptions of the Equilibrium Theory of Biodiversity Dynamics.
+#'
+#' @param t Number of time steps
+#' @param JmaxV Resource levels (Jmax)
+#' @param DIST Type of species abundance distribution: either log-normal: "NORM", Fisher's log-series: "SRS", or uniform:"NO" (SAD)
+#' @param NegExpEx If true indicates extinction is population size dependent and will utilize exparm paramaters.
+#' @param exparm Extinction parameter (x0)
+#' @param exparm2 Extinction parameter (x1)
+#' @param ExpSp If true indicates speciation is population size dependent and will utilize ExpSpParm paramaters.
+#' @param ExpSpParm Speciation parameter (v0)
+#' @param ExpSpParm2 Speciation parameter (v1)
+#' @param splitparm Heritability of population size (h)
+#' @param constantEX Constant probability of either speciation or extinction given one of the dependencies is false (con)
+#' @param initialsize Initial population size of starting species
 
-
-
-ETBD_migrateSYM.NE = function(initialtree,
+#' @return A list containing:
+#' \itemize{
+#'   \item \code{tree} – The final newick tree  after simulation.
+#'   \item \code{trees} – All trees at each time step
+#'   \item \code{matrix_list} – A list of all species identities and population sizes for final tree
+#'   \item \code{mig} – A list of all species identities and population sizes for every tree at each time step
+#' }
+#' @examples
+#' ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm2 = -0.70,psymp = 0.36, ExpSp = T,    ExpSpParm2 = -0.08,ExpSpParm = 0.94,constantEX =  0.36,splitparm = .5, )
+#' @export
+ETBD_migrateSYM.NE <- function(initialtree,
                            t = 10,
                            JmaxV = 1000,
                            split = F,
@@ -1029,3 +1048,8 @@ if (ipa %in%  Asteroid) {
 
 
 ####### Extra testing #######
+
+
+
+
+
