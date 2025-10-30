@@ -221,9 +221,6 @@ ETBD_migrateSYM.NE <- function(initialtree,
   for (ipa in 1:t)
 
   {
-
-    progress_step(ipa, t, n = 1000)  # place here
-
     #start
     matrix_list0 <- matrix_list6
 
@@ -1026,7 +1023,6 @@ if (ipa %in%  Asteroid) {
   )
 
   }
-  cat("\nSimulation complete.\n")
 }
 
 
