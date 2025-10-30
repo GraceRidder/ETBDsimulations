@@ -216,7 +216,7 @@ ETBD_migrateSYM.NE <- function(initialtree,
 
 
   pine <- "(t001:1,t002:1);"
-  print("version Ecology Letters")
+  print("version: trailmix")
 
   for (ipa in 1:t)
 
@@ -987,13 +987,12 @@ if (ipa %in%  Asteroid) {
         break
       }
 
-
       ## counting ten time steps
       is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)
         abs(x - round(x)) < tol
-      B <- ipa / 100
+      B <- ipa / 10
       if (is.wholenumber(B)) {
-        print(paste('relax everything is okay ...', ipa))
+        print(paste('reaching time step...', ipa))
       }
     }
 
