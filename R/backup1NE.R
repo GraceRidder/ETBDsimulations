@@ -222,6 +222,8 @@ ETBD_migrateSYM.NE <- function(initialtree,
 
   {
 
+    progress_step(ipa, t, n = 1000)  # place here
+
     #start
     matrix_list0 <- matrix_list6
 
@@ -989,13 +991,15 @@ if (ipa %in%  Asteroid) {
       }
 
 
-      ## counting ten time steps
-      is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)  abs(x - round(x)) < tol
-      B <- ipa/100
-      if (is.wholenumber(B)){
-        print(paste('relax everything is okay ...', ipa))
-      }
-    }
+    #   ## counting ten time steps
+    #   is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)
+    #     abs(x - round(x)) < tol
+    #   B <- ipa / 100
+    #   if (is.wholenumber(B)) {
+    #     print(paste('relax everything is okay ...', ipa))
+    #   }
+    # }
+
 
     #monitors of sizes and trees
     extinctsp[[ipa]] = extincttotal
@@ -1021,7 +1025,8 @@ if (ipa %in%  Asteroid) {
     )
   )
 
-}
+  }
+  cat("\nSimulation complete.\n")
 }
 
 
