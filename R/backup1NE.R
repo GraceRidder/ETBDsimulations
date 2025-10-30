@@ -455,7 +455,7 @@ ETBD_migrateSYM.NE <- function(initialtree,
 
 
       ##for budding speciation one branch has same abundance and new branch has 10% of original
-        print("budding")
+
         i  <- 1
         fax <- list()
         for (o in 1:length(symp_spB)) {
@@ -498,7 +498,7 @@ ETBD_migrateSYM.NE <- function(initialtree,
           print("deadpool is negative")
           deadpool <- 300
         } else {
-          print(deadpool)
+        #  print(deadpool)
           deadpool <- deadpool}
 
 
@@ -598,7 +598,7 @@ ETBD_migrateSYM.NE <- function(initialtree,
 
       ##for splitting speciation 10% is subtracted from original and new branch is 10% of original
 
-        print("splitting")
+
         i  <- 1
         fax <- list()
         for (o in 1:length(symp_spS)) {
@@ -980,7 +980,6 @@ if (ipa %in%  Asteroid) {
 
 
       pine <- Ntree
-
       summat <- sum(na.omit(unlist(matrix_list6)))
 
 
@@ -998,7 +997,6 @@ if (ipa %in%  Asteroid) {
       }
     }
 
-
     #monitors of sizes and trees
     extinctsp[[ipa]] = extincttotal
     matrixlists[[ipa]] = matrix_list6
@@ -1007,7 +1005,7 @@ if (ipa %in%  Asteroid) {
      symp[[ipa]] = symp_sp
 
   }
-  print(paste('equilibrium met: stopping at', ipa))
+  print(paste('stopping at', ipa))
   return(
     list(
       tree = Ntree,
