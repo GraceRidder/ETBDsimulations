@@ -988,14 +988,14 @@ if (ipa %in%  Asteroid) {
       }
 
 
-    #   ## counting ten time steps
-    #   is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)
-    #     abs(x - round(x)) < tol
-    #   B <- ipa / 100
-    #   if (is.wholenumber(B)) {
-    #     print(paste('relax everything is okay ...', ipa))
-    #   }
-    # }
+      ## counting ten time steps
+      is.wholenumber <- function(x, tol = .Machine$double.eps^0.5)
+        abs(x - round(x)) < tol
+      B <- ipa / 100
+      if (is.wholenumber(B)) {
+        print(paste('relax everything is okay ...', ipa))
+      }
+    }
 
 
     #monitors of sizes and trees
@@ -1024,9 +1024,6 @@ if (ipa %in%  Asteroid) {
 
   }
 }
-
-
-
 
 
 
