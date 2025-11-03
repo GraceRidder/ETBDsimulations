@@ -5,7 +5,7 @@
 #setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 
-simETBD = function(initialtree,
+simW = function(initialtree,
                               t = 100,
                               JmaxV = 2000,
                               split = F,
