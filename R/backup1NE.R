@@ -27,7 +27,7 @@
 #' @examples
 #' ETBD_migrateSYM.NE(t =20,DIST = "NORM",JmaxV = 3807,NegExpEx = T,  exparm = -0.82, exparm1 = -0.70,consp = 0.36, ExpSp = T,    spparm1 = -0.08,ExpSpParm = 0.94,conex =  0.36,splitparm = .5, )
 #' @export
-ETBD_migrateSYM.NE <- function(initialtree,
+simETBD <- function(initialtree,
                            t = 10,
                            JmaxV = 1000,
                            split = F,
