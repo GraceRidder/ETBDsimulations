@@ -794,7 +794,7 @@ if (!GROW){
 richy <- append(richy, length(unmatrixlist(matrix_list5)))
 
 if (length(richy) > 50) {  # Ensure enough data points
-  ema_values <- EMA(richy, n = 20)  # Smooth population data
+  ema_values <- TTR::EMA(richy, n = 20)  # Smooth population data
 
   stable_count <- 0  # Track consecutive stable steps
   required_stable_steps <- 20  # How many steps need to be stable before stopping
