@@ -1,4 +1,3 @@
-
 #' simETBD.
 #'
 #' Simulates phylogenetic trees under the assumptions of the Equilibrium Theory of Biodiversity Dynamics.
