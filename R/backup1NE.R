@@ -1,5 +1,5 @@
 
-#' ETBD_migrateSYM.NE.
+#' simETBD.
 #'
 #' Simulates phylogenetic trees under the assumptions of the Equilibrium Theory of Biodiversity Dynamics.
 #'
@@ -481,36 +481,36 @@ simETBD <- function(initialtree,
         #   J <- append(J, JmaxV[i] * (S[i] / (100 + S[i])))
         # }
 
-
-        deadpool <- JmaxV
-
-
-        oldJ <- c()
-        for ( i in 1:length(matrix_list4)){
-          old <- sum(matrix_list4[[i]])
-          oldJ <- append(oldJ, old)
-          deadpool <- deadpool-oldJ[[i]]
-        }
-
-
-        if (deadpool < 0){
-          print("deadpool is negative")
-          deadpool <- 300
-        } else {
-        #  print(deadpool)
-          deadpool <- deadpool}
-
-
-
+#
+#         deadpool <- JmaxV
+#
+#
+#         oldJ <- c()
+#         for ( i in 1:length(matrix_list4)){
+#           old <- sum(matrix_list4[[i]])
+#           oldJ <- append(oldJ, old)
+#           deadpool <- deadpool-oldJ[[i]]
+#         }
+#
+#
+#         if (deadpool <= 0){
+#           print("deadpool is negative")
+#           deadpool <- 300
+#         } else {
+#           print(deadpool)
+#           deadpool <- deadpool}
+#
+#
+#
         flop <- as.matrix(as.numeric(fax))
-        random_percents <- runif(length(flop), min = 0, max = 1)
-
-        farm <- c()
-        for ( i in 1:length(flop)){
-          clown <-  random_percents[i]*deadpool
-          farm <- append(farm,clown)
-          deadpool = deadpool - clown
-        }
+#         random_percents <- runif(length(flop), min = 0, max = 1)
+#
+#         farm <- c()
+#         for ( i in 1:length(flop)){
+#           clown <-  random_percents[i]*deadpool
+#           farm <- append(farm,clown)
+#           deadpool = deadpool - clown
+#         }
 
        # flop <- as.matrix(as.numeric(farm))
 
@@ -790,7 +790,6 @@ if (!GROW){
 }
 
 
-
 richy <- append(richy, length(unmatrixlist(matrix_list5)))
 
 if (length(richy) > 50) {  # Ensure enough data points
@@ -851,7 +850,6 @@ for(o in 1:length(matrix_list5)) {
   }
   }
 }
-
 
 
 if (ipa %in%  Asteroid) {
