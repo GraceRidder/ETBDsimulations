@@ -1,11 +1,21 @@
-Package: ETBDsim
 Type: Package
+Package: ETBDsim
 Title: A simulator for ETBD (Equilibrium Theory of Biodiversity Dynamics)
 Version: 0.1.0
 Author: Grace Ridder
 Maintainer: The package maintainer <graceiridder@gmail.com>
-Description: Simulator for ETBD. Explores differemt speciation and extinction mechanisms and thier use in maintaining a dynamic equalibrium. 
+Description: Simulator for ETBD. Explores differemt speciation and
+    extinction mechanisms and thier use in maintaining a dynamic
+    equalibrium.
 License: What license is it under?
+Imports: 
+    ape,
+    geiger,
+    MASS,
+    phytools,
+    sads,
+    stringr,
+    TTR
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.3.3
