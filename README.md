@@ -29,19 +29,19 @@ Below is an example of how to run the `simETBD()` function in R and inspect the 
 
 ```r
 
-# Run ETBD simulation
+# Run ETBD simulation with both population size dependent speciation and extinction 
 res1 <- simETBD(
-  t = 200,                        # Number of time steps
-  DIST = "NORM",                  # Species abundance distribution
-  JmaxV = scaled_samples[e, 1],   # Maximum number of individuals
-  NegExpEx = TRUE,                # Population size dependent extinction
-  exparm0 = scaled_samples[e, 3], # Extinction parameter 0
-  exparm1 = scaled_samples[e, 4], # Extinction parameter 1
-  consp = scaled_samples[e, 5],   # Constant probability of speciation (if enabled)
-  ExpSp = TRUE,                   # Size dependent speciation (at least one speciation mode must be TRUE)
-  spparm1 = scaled_samples[e, 6], # Speciation parameter 1
-  spparm0 = scaled_samples[e, 7], # Speciation parameter 0
-  conex = scaled_samples[e, 5],   # Constant probability of extinction (if enabled)
+  t = 200,  # Number of time steps
+  DIST = "NORM",  # Species abundance distribution
+  JmaxV = 2000,   # Maximum number of individuals
+  NegExpEx = TRUE,  # Population size dependent extinction
+  exparm0 = -0.76, # Extinction parameter 0
+  exparm1 = -0.56, # Extinction parameter 1
+  consp = s.21,   # Constant probability of speciation (if size dependent speciation is disabled)
+  ExpSp = TRUE,   # Size dependent speciation (at least one speciation mode must be TRUE)
+  spparm1 =  -0.05, # Speciation parameter 1
+  spparm0 = 0.95, # Speciation parameter 0
+  conex = .21,   # Constant probability of extinction (if size dependent extinctioin is disabled)
   splitparm = scaled_samples[e, 2] # Heritability parameter
 )
 
