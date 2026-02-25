@@ -3,7 +3,7 @@
 
 ## Installation
 
-You can install the development version of **ETBDsimulations** from GitHub using the `devtools` package.
+You can install this version of **ETBDsimulations** from GitHub using the `devtools` package.
 
 ### 1. Install `devtools` (if not already installed)
 
